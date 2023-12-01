@@ -12,19 +12,21 @@ try:
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
-def escribir_base_de_datos(hilo_id,pedido):
-    # Realizar la conexión a la base de datos
-    client = MongoClient(uri)
-    db = client["mydb"]
-    users_collection = db["Burguer"]
+def escribir_base_de_datos(pedido):
+    # Realizar la conexión a la base de datos usando el administrador de contexto
+    with MongoClient(uri) as client:
+        db = client["mydb"]
+        users_collection = db["Burguer"]
 
-    # Insertar el valor en la base de datos
-    usuario = {
-        "hilo": pedido,
-    }
+        # Insertar el valor en la base de datos
+        usuario = {
+            "hilo": threading.current_thread().name,
+            "pedido": pedido.to_dict()
+        }
 
-    result = users_collection.insert_one(usuario)
-    print(f"Hilo {hilo_id}: Usuario insertado con ID: {result.inserted_id}")
+        result = users_collection.insert_one(usuario)
+        # print(f"Hilo {threading.current_thread().name}: Usuario insertado con ID: {result.inserted_id}")
+
 
     # Cerrar la conexión
     client.close()
@@ -32,6 +34,11 @@ class Pedido:
     def __init__(self, identificador, items):
         self.identificador = identificador
         self.items = items
+    def to_dict(self):
+        return {
+            "identificador": self.identificador,
+            "items": self.items
+        }
 
 MENU = {
     1: {"nombre": "Hamburguesa", "cantidad_vendida": 0},
@@ -81,9 +88,8 @@ def procesar_pedido(pedido, pedidos_ejecutados):
         for item in pedido.items:
             # Simulación de tiempo de preparación
             time.sleep(2)
-            print(pedido.items)
-            # print(f"  Preparando: {item}")
-        # escribir_base_de_datos(threading.current_thread().name, pedido)
+        # Utilizar el método escribir_base_de_datos para insertar el pedido en la base de datos
+        escribir_base_de_datos(pedido)
         print(f"---------->Pedido {pedido.identificador} listo.")
         pedidos_ejecutados.append(pedido)
 
