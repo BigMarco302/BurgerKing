@@ -19,7 +19,10 @@ MENU = {
 # Lock para sincronizar la impresión de mensajes en la consola
 lock_consola = threading.Lock()
 
+cantidad_vendida = 0
+
 def tomar_pedido():
+    global cantidad_vendida
     print("Menú:")
     for num, item in MENU.items():
         print(f"  {num}. {item}")
@@ -33,6 +36,10 @@ def tomar_pedido():
             num_seleccion = int(seleccion)
             if num_seleccion in MENU:
                 items.append(MENU[num_seleccion])
+                cantidad_vendida += 1  # Incrementar la cantidad vendida al agregar un producto
+                if cantidad_vendida > 30:
+                    print("¡Ya no hay suficiente producto!")
+                    break
             else:
                 print("Número no válido. Intente nuevamente.")
         except ValueError:
