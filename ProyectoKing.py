@@ -34,25 +34,24 @@ class Pedido:
         self.items = items
 
 MENU = {
-    1: "Hamburguesa",
-    2: "Helado",
-    3: "Papas",
-    4: "Refresco",
-    5: "Hamburguesa con Queso",
-    6: "Nuggets"
+    1: {"nombre": "Hamburguesa", "cantidad_vendida": 0},
+    2: {"nombre": "Helado", "cantidad_vendida": 0},
+    3: {"nombre": "Papas", "cantidad_vendida": 0},
+    4: {"nombre": "Refresco", "cantidad_vendida": 0},
+    5: {"nombre": "Hamburguesa con Queso", "cantidad_vendida": 0},
+    6: {"nombre": "Nuggets", "cantidad_vendida": 0}
 }
 
 # Lock para sincronizar la impresión de mensajes en la consola se encarga que cuando
 #el hilo1 llega y se procrece pero si llega otro hilo2 este quedara en espera hasta que termine el hilo1
 lock_consola = threading.Lock()
 
-cantidad_vendida = 0
 
 def tomar_pedido():
     global cantidad_vendida
     print("Menú:")
     for num, item in MENU.items():
-        print(f"  {num}. {item}")
+        print(f"  {num}. {item['nombre']} - {item['cantidad_vendida']} vendidos")
 
     items = []
     while True:
@@ -62,17 +61,19 @@ def tomar_pedido():
         try:
             num_seleccion = int(seleccion)
             if num_seleccion in MENU:
-                items.append(MENU[num_seleccion])
-                cantidad_vendida += 1  # Incrementar la cantidad vendida al agregar un producto
-                if cantidad_vendida > 30:
+                item_seleccionado = MENU[num_seleccion]
+                if item_seleccionado['cantidad_vendida'] < 30:
+                    items.append(item_seleccionado['nombre'])
+                    item_seleccionado['cantidad_vendida'] += 1
+                else:
                     print("¡Ya no hay suficiente producto!")
-                    break
             else:
                 print("Número no válido. Intente nuevamente.")
         except ValueError:
             print("Entrada no válida. Ingrese un número o 'fin'.")
 
     return items
+
 
 def procesar_pedido(pedido, pedidos_ejecutados):
     with lock_consola:
