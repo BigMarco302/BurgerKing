@@ -1,7 +1,33 @@
 import collections
 import threading
 import time
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+uri = "mongodb+srv://BigMarco302:Vazquez1976@clustermarco.w6s7tqg.mongodb.net/?retryWrites=true&w=majority"
 
+client = MongoClient(uri, server_api=ServerApi('1'))
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+def escribir_base_de_datos(hilo_id,pedido):
+    # Realizar la conexión a la base de datos
+    client = MongoClient(uri)
+    db = client["mydb"]
+    users_collection = db["Burguer"]
+
+    # Insertar el valor en la base de datos
+    usuario = {
+        "hilo": pedido,
+    }
+
+    result = users_collection.insert_one(usuario)
+    print(f"Hilo {hilo_id}: Usuario insertado con ID: {result.inserted_id}")
+
+    # Cerrar la conexión
+    client.close()
 class Pedido:
     def __init__(self, identificador, items):
         self.identificador = identificador
@@ -16,7 +42,8 @@ MENU = {
     6: "Nuggets"
 }
 
-# Lock para sincronizar la impresión de mensajes en la consola
+# Lock para sincronizar la impresión de mensajes en la consola se encarga que cuando
+#el hilo1 llega y se procrece pero si llega otro hilo2 este quedara en espera hasta que termine el hilo1
 lock_consola = threading.Lock()
 
 cantidad_vendida = 0
@@ -53,15 +80,11 @@ def procesar_pedido(pedido, pedidos_ejecutados):
         for item in pedido.items:
             # Simulación de tiempo de preparación
             time.sleep(2)
+            print(pedido.items)
             # print(f"  Preparando: {item}")
+        # escribir_base_de_datos(threading.current_thread().name, pedido)
         print(f"---------->Pedido {pedido.identificador} listo.")
         pedidos_ejecutados.append(pedido)
-
-def mostrar_pedidos(cola):
-    with lock_consola:
-        print("\nPedidos en cola:")
-        for pedido in cola:
-            print(f"  Pedido {pedido.identificador}: {pedido.items}")
 
 def mostrar_pedidos_ejecutados(pedidos_ejecutados):
     with lock_consola:
@@ -77,9 +100,8 @@ def main():
     while True:
         print("\nBienvenido a Burger King. ¿Qué desea hacer?")
         print("  1. Tomar un nuevo pedido")
-        print("  2. Mostrar todos los pedidos en cola")
-        print("  3. Mostrar todos los pedidos ejecutados")
-        print("  4. Salir")
+        print("  2. Mostrar todos los pedidos ejecutados")
+        print("  3. Salir")
 
         opcion = input("Ingrese el número de la opción: ")
 
@@ -90,12 +112,9 @@ def main():
             print(f"\nPedido {nuevo_pedido.identificador} agregado a la cola.")
 
         elif opcion == '2':
-            mostrar_pedidos(cola_pedidos)
-
-        elif opcion == '3':
             mostrar_pedidos_ejecutados(pedidos_ejecutados)
 
-        elif opcion == '4':
+        elif opcion == '3':
             break
 
         else:
