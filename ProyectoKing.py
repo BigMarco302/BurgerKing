@@ -105,7 +105,7 @@ def main():
     identificador_pedido = 1
 
     while True:
-        print("\nBienvenido a Burger King. ¿Qué desea hacer?")
+        print("\nBienvenido a Burger King. ¿Qué desea ordenar?")
         print("  1. Tomar un nuevo pedido")
         print("  2. Mostrar todos los pedidos tomados")
         print("  3. Salir")
