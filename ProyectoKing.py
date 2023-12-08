@@ -46,7 +46,8 @@ MENU = {
     3: {"nombre": "Papas", "cantidad_vendida": 0},
     4: {"nombre": "Refresco", "cantidad_vendida": 0},
     5: {"nombre": "Hamburguesa con Queso", "cantidad_vendida": 0},
-    6: {"nombre": "Nuggets", "cantidad_vendida": 0}
+    6: {"nombre": "Nuggets", "cantidad_vendida": 0},
+    7: {"nombre": "Nuggets", "cantidad_vendida": 0}
 }
 
 # Lock para sincronizar la impresión de mensajes en la consola se encarga que cuando
