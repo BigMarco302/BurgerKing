@@ -107,7 +107,7 @@ def main():
     while True:
         print("\nBienvenido a Burger King. ¿Qué desea hacer?")
         print("  1. Tomar un nuevo pedido")
-        print("  2. Mostrar todos los pedidos ejecutados")
+        print("  2. Mostrar todos los pedidos tomados")
         print("  3. Salir")
 
         opcion = input("Ingrese el número de la opción: ")
@@ -136,3 +136,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
